@@ -1,0 +1,17 @@
+﻿@page "/Login"
+@layout LoginLayout
+
+<MudPaper Class="pa-16 ma-2" Outlined="true">
+    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+        <MudText Typo="Typo.h5">Inicio de Sesion</MudText>
+        <MudTextField @bind-Value="UserName" Label="Usuario" Variant="Variant.Outlined" Style="width: 400px;" />
+        <MudTextField @bind-Value="Password" Label="Contraseña" Variant="Variant.Outlined" InputType="InputType.Password" Style="width: 400px;" />
+        <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" Style="width: 400px;">Iniciar Sesion</MudButton>
+    </MudStack>
+</MudPaper>
+
+@code
+{
+    private string UserName { get; set; } = string.Empty;
+    private string Password { get; set; } = string.Empty;
+}

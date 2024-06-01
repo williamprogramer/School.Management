@@ -1,5 +1,6 @@
 ﻿@page "/"
+@attribute [Authorize(Roles = "Administrator")]
 
 <PageTitle>Home</PageTitle>
 
-<h2>Hi, William!</h2>
+<h2>Hi, @context.User.Identity?.Name!</h2>
