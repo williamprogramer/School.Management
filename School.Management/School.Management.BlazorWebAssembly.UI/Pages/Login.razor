@@ -1,17 +1,48 @@
-﻿@page "/Login"
+﻿@using System.ComponentModel.DataAnnotations
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@page "/Login"
 @layout LoginLayout
 
-<MudPaper Class="pa-16 ma-2" Outlined="true">
-    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
-        <MudText Typo="Typo.h5">Inicio de Sesion</MudText>
-        <MudTextField @bind-Value="UserName" Label="Usuario" Variant="Variant.Outlined" Style="width: 400px;" />
-        <MudTextField @bind-Value="Password" Label="Contraseña" Variant="Variant.Outlined" InputType="InputType.Password" Style="width: 400px;" />
-        <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" Style="width: 400px;">Iniciar Sesion</MudButton>
-    </MudStack>
-</MudPaper>
+<EditForm Model="@model" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudPaper Class="m-3 p-3" Outlined="true">
+        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+            <MudImage Src="logo.png" Alt="Logo" Width="100" Height="100" Class="rounded-lg" Style="background-color: #594ae2 !important;" />
+            <MudText Typo="Typo.h5">Inicio de Sesion</MudText>
+            <MudTextField @bind-Value="model.UserName" Label="Usuario" Variant="Variant.Outlined" For="(() => model.UserName)" Immediate="true"/>
+            <MudTextField @bind-Value="model.Password" Label="Contraseña" Variant="Variant.Outlined" InputType="InputType.Password" For="(() => model.Password)" />
+            <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" ButtonType="ButtonType.Submit">
+                @if (_processing)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    <MudText Class="ms-2">Procesando</MudText>
+                }
+                else
+                {
+                    <MudText>Iniciar sesion</MudText>
+                }
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+</EditForm>
 
 @code
 {
-    private string UserName { get; set; } = string.Empty;
-    private string Password { get; set; } = string.Empty;
+    AutheticateModel model = new AutheticateModel();
+    private bool _processing = false;
+
+    private void OnValidSubmit(EditContext context)
+    {
+        ((AppAuthenticationStateProvider)AuthenticationStateProvider).Authenticate();
+        NavigationManager.NavigateTo("/");
+    }
+
+    public class AutheticateModel
+    {
+        [Required(ErrorMessage = "El Usuario es requerido")]
+        public string UserName { get; set; } = string.Empty;
+        [Required(ErrorMessage = "La Contraseña es requerido")]
+        public string Password { get; set; } = string.Empty;
+    }
 }
