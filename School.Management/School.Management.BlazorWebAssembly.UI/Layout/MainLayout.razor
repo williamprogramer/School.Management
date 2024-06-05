@@ -8,17 +8,17 @@
 
 <MudLayout>
     <MudAppBar Elevation="1" Dense="true">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="DrawerToggle" />
         <MudText Typo="Typo.h5" Class="ml-3">Management</MudText>
         <MudSpacer />
-        <MudMenu AnchorOrigin="Origin.TopLeft" TransformOrigin="Origin.TopCenter">
+        <MudMenu AnchorOrigin="Origin.TopLeft" TransformOrigin="Origin.TopLeft">
             <ActivatorContent>
                 <MudAvatar>
                     <MudImage Src="logo.png" Alt="Logo" />
                 </MudAvatar>
             </ActivatorContent>
             <ChildContent>
-                <MudMenuItem IconColor="Color.Primary" Icon="@Icons.Material.Filled.Logout" OnClick="Logout">Salir</MudMenuItem>
+                <MudMenuItem OnClick="Logout" OnTouch="Logout" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Primary">Salir</MudMenuItem>
             </ChildContent>
         </MudMenu>
     </MudAppBar>
@@ -26,7 +26,7 @@
         <MudPaper Elevation="0">
             <MudNavMenu Rounded="true" Margin="Margin.Dense" Color="Color.Primary" Class="pa-2" Bordered="true">
                 <AuthorizeView Roles="Administrator">
-                    <MudNavLink Href="/" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+                    <MudNavLink Href="/" Icon="@Icons.Material.Filled.Dashboard">Panel de control</MudNavLink>
                     <MudNavGroup Title="Mantenimientos" Expanded="false">
                         <MudNavLink Href="/Administrators" Icon="@Icons.Material.Filled.Groups">Administradores</MudNavLink>
                     </MudNavGroup>
@@ -44,7 +44,7 @@
 @code {
     bool _drawerOpen = true;
 
-    void DrawerToggle()
+    private void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
     }

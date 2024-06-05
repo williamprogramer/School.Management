@@ -1,0 +1,19 @@
+@page "/Administrators"
+@attribute [Authorize(Roles = "Administrator")]
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudPaper Outlined="true" Class="p-3">
+                <MudStack Row="true" AlignItems="AlignItems.End" Justify="Justify.FlexEnd">
+                    <MudButton>Prueba</MudButton>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code
+{
+
+}
