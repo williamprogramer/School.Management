@@ -1,31 +1,36 @@
-﻿@using System.ComponentModel.DataAnnotations
-@inject AuthenticationStateProvider AuthenticationStateProvider
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @page "/Login"
 @layout LoginLayout
 
-<EditForm Model="@model" OnValidSubmit="@OnValidSubmit">
-    <DataAnnotationsValidator />
-    <MudPaper Class="m-3 p-3" Outlined="true">
-        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
-            <MudImage Src="logo.png" Alt="Logo" Width="100" Height="100" Class="rounded-lg" Style="background-color: #594ae2 !important;" />
-            <MudText Typo="Typo.h5">Inicio de Sesion</MudText>
-            <MudTextField @bind-Value="model.UserName" Label="Usuario" Variant="Variant.Outlined" For="(() => model.UserName)" Immediate="true"/>
-            <MudTextField @bind-Value="model.Password" Label="Contraseña" Variant="Variant.Outlined" InputType="InputType.Password" For="(() => model.Password)" />
-            <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" ButtonType="ButtonType.Submit">
-                @if (_processing)
-                {
-                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                    <MudText Class="ms-2">Procesando</MudText>
-                }
-                else
-                {
-                    <MudText>Iniciar sesion</MudText>
-                }
-            </MudButton>
-        </MudStack>
-    </MudPaper>
-</EditForm>
+<MudGrid>
+    <MudItem xs="12">
+        <EditForm Model="@model" OnValidSubmit="@OnValidSubmit">
+            <DataAnnotationsValidator />
+            <MudContainer MaxWidth="MaxWidth.Small">
+                <MudPaper Class="m-3 p-3" Outlined="true">
+                    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                        <MudImage Src="logo.png" Alt="Logo" Width="100" Height="100" Class="rounded-lg" Style="background-color: #594ae2 !important;" />
+                        <MudText Typo="Typo.h5">Inicio de Sesion</MudText>
+                        <MudTextField @bind-Value="model.UserName" Label="Usuario" Variant="Variant.Outlined" For="(() => model.UserName)" Immediate="true" FullWidth="true"/>
+                        <MudTextField @bind-Value="model.Password" Label="Contraseña" Variant="Variant.Outlined" InputType="InputType.Password" For="(() => model.Password)" FullWidth="true" />
+                        <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="@_processing" Size="Size.Medium" EndIcon="@Icons.Material.Filled.Login">
+                            @if (_processing)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2">Procesando</MudText>
+                            }
+                            else
+                            {
+                                <MudText>Iniciar sesion</MudText>
+                            }
+                        </MudButton>
+                    </MudStack>
+                </MudPaper>
+            </MudContainer>
+        </EditForm>
+    </MudItem>
+</MudGrid>
 
 @code
 {
@@ -34,8 +39,10 @@
 
     private void OnValidSubmit(EditContext context)
     {
+        _processing = true;
         ((AppAuthenticationStateProvider)AuthenticationStateProvider).Authenticate();
         NavigationManager.NavigateTo("/");
+        _processing = false;
     }
 
     public class AutheticateModel

@@ -1,4 +1,6 @@
 ﻿@inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
 
 <MudThemeProvider />
 <MudDialogProvider />
@@ -16,7 +18,7 @@
                 </MudAvatar>
             </ActivatorContent>
             <ChildContent>
-                <MudMenuItem IconColor="Color.Primary" Icon="@Icons.Material.Filled.Logout">Salir</MudMenuItem>
+                <MudMenuItem IconColor="Color.Primary" Icon="@Icons.Material.Filled.Logout" OnClick="Logout">Salir</MudMenuItem>
             </ChildContent>
         </MudMenu>
     </MudAppBar>
@@ -45,5 +47,11 @@
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    private void Logout()
+    {
+        ((AppAuthenticationStateProvider)AuthenticationStateProvider).Logout();
+        NavigationManager.NavigateTo("/login");
     }
 }
