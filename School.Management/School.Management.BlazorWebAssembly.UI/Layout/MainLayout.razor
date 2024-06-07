@@ -25,6 +25,9 @@
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <MudPaper Elevation="0">
             <MudNavMenu Rounded="true" Margin="Margin.Dense" Color="Color.Primary" Class="pa-2" Bordered="true">
+                <AuthorizeView Roles="Student">
+                    <MudNavLink Href="/" Icon="@Icons.Material.Filled.Dashboard">Panel de control</MudNavLink>
+                </AuthorizeView>
                 <AuthorizeView Roles="Administrator">
                     <MudNavLink Href="/" Icon="@Icons.Material.Filled.Dashboard">Panel de control</MudNavLink>
                     <MudNavGroup Title="Mantenimientos" Expanded="false">
@@ -42,7 +45,7 @@
 </MudLayout>
 
 @code {
-    bool _drawerOpen = true;
+    private bool _drawerOpen = true;
 
     private void DrawerToggle()
     {

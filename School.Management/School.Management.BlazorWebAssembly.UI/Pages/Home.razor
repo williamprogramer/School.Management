@@ -1,8 +1,12 @@
 ﻿@page "/"
-@attribute [Authorize(Roles = "Administrator")]
+@attribute [Authorize(Roles = "Administrator, Student")]
 
 <PageTitle>Home</PageTitle>
 
-<AuthorizeView>
-    <MudText Typo="Typo.h5">Hi, @context.User.Identity?.Name!</MudText>
+<AuthorizeView Roles="Administrator">
+    <MudText Typo="Typo.h5">Hi, @context.User.Identity?.Name! Administrator</MudText>
+</AuthorizeView>
+
+<AuthorizeView Roles="Student">
+    <MudText Typo="Typo.h5">Hi, @context.User.Identity?.Name! Student</MudText>
 </AuthorizeView>

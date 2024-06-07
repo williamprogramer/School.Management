@@ -2,6 +2,7 @@
 @inject NavigationManager NavigationManager
 @page "/Login"
 @layout LoginLayout
+@inject HttpClient HttpClient
 
 <MudGrid>
     <MudItem xs="12">
@@ -34,7 +35,7 @@
 
 @code
 {
-    AutheticateModel model = new AutheticateModel();
+    private AutheticateModel model = new AutheticateModel();
     private bool _processing = false;
 
     private void OnValidSubmit(EditContext context)
@@ -45,11 +46,15 @@
         _processing = false;
     }
 
-    public class AutheticateModel
+    protected override async Task OnInitializedAsync()
     {
-        [Required(ErrorMessage = "El Usuario es requerido")]
-        public string UserName { get; set; } = string.Empty;
-        [Required(ErrorMessage = "La Contraseña es requerido")]
-        public string Password { get; set; } = string.Empty;
+        try
+        {
+            var result = await HttpClient.GetAsync("api/Auth");
+        }
+        catch (Exception ex)
+        {            
+            throw ex;
+        }
     }
 }
