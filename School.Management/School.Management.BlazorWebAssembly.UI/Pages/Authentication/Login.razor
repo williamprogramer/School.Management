@@ -1,7 +1,7 @@
-﻿@inject AuthenticationStateProvider AuthenticationStateProvider
-@inject NavigationManager NavigationManager
-@page "/Login"
+﻿@page "/Login"
 @layout LoginLayout
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
 @inject HttpClient HttpClient
 
 <MudGrid>
@@ -15,6 +15,10 @@
                         <MudText Typo="Typo.h5">Inicio de Sesion</MudText>
                         <MudTextField @bind-Value="model.UserName" Label="Usuario" Variant="Variant.Outlined" For="(() => model.UserName)" Immediate="true" FullWidth="true"/>
                         <MudTextField @bind-Value="model.Password" Label="Contraseña" Variant="Variant.Outlined" InputType="InputType.Password" For="(() => model.Password)" FullWidth="true" />
+                        @if (_showAlert)
+                        {
+                            <MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => _showAlert = !_showAlert)">Time to leave. Please close me!</MudAlert>
+                        }
                         <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="@_processing" Size="Size.Medium" EndIcon="@Icons.Material.Filled.Login">
                             @if (_processing)
                             {
@@ -37,6 +41,7 @@
 {
     private AutheticateModel model = new AutheticateModel();
     private bool _processing = false;
+    private bool _showAlert = false;
 
     private async void OnValidSubmit(EditContext context)
     {
@@ -57,7 +62,12 @@
                 NavigationManager.NavigateTo("/");
             }
         }
+        else
+        {
+            _showAlert = true;
+        }
         _processing = false;
+        StateHasChanged();
     }
 
     public class ResponseModel

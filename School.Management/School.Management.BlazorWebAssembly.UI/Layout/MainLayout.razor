@@ -52,9 +52,9 @@
         _drawerOpen = !_drawerOpen;
     }
 
-    private void Logout()
+    private async void Logout()
     {
-        ((AppAuthenticationStateProvider)AuthenticationStateProvider).Logout();
+        await ((AppAuthenticationStateProvider)AuthenticationStateProvider).Logout();
         NavigationManager.NavigateTo("/login");
     }
 }
