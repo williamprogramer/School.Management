@@ -38,23 +38,30 @@
     private AutheticateModel model = new AutheticateModel();
     private bool _processing = false;
 
-    private void OnValidSubmit(EditContext context)
+    private async void OnValidSubmit(EditContext context)
     {
         _processing = true;
-        ((AppAuthenticationStateProvider)AuthenticationStateProvider).Authenticate();
-        NavigationManager.NavigateTo("/");
+        var response = await HttpClient.PostAsJsonAsync("/api/auth", new
+        {
+            Name = model.UserName,
+            Password = model.Password
+        });
+
+        if (response.IsSuccessStatusCode)
+        {
+            ResponseModel? model = await response.Content.ReadFromJsonAsync<ResponseModel>();
+
+            if (model is not null && !string.IsNullOrWhiteSpace(model?.Token))
+            {
+                await ((AppAuthenticationStateProvider)AuthenticationStateProvider).AuthenticateAsync(model.Token);
+                NavigationManager.NavigateTo("/");
+            }
+        }
         _processing = false;
     }
 
-    protected override async Task OnInitializedAsync()
+    public class ResponseModel
     {
-        try
-        {
-            var result = await HttpClient.GetAsync("api/Auth");
-        }
-        catch (Exception ex)
-        {            
-            throw ex;
-        }
+        public string Token { get; set; } = string.Empty;
     }
 }
