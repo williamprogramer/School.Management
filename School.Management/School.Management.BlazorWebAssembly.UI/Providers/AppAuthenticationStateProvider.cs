@@ -59,7 +59,7 @@ namespace School.Management.BlazorWebAssembly.UI.Providers
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));
         }
 
-        public async Task Logout()
+        public async Task LogoutAsync()
         {
             await localStorage.RemoveItemAsync("token");
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new ClaimsPrincipal())));

@@ -13,7 +13,7 @@
                     <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
                         <MudImage Src="logo.png" Alt="Logo" Width="100" Height="100" Class="rounded-lg" Style="background-color: #594ae2 !important;" />
                         <MudText Typo="Typo.h5">Inicio de Sesion</MudText>
-                        <MudTextField @bind-Value="model.UserName" Label="Usuario" Variant="Variant.Outlined" For="(() => model.UserName)" Immediate="true" FullWidth="true"/>
+                        <MudTextField @bind-Value="model.Name" Label="Usuario" Variant="Variant.Outlined" For="(() => model.Name)" Immediate="true" FullWidth="true"/>
                         <MudTextField @bind-Value="model.Password" Label="Contraseña" Variant="Variant.Outlined" InputType="InputType.Password" For="(() => model.Password)" FullWidth="true" />
                         @if (_showAlert)
                         {
@@ -46,11 +46,7 @@
     private async void OnValidSubmit(EditContext context)
     {
         _processing = true;
-        var response = await HttpClient.PostAsJsonAsync("/api/auth", new
-        {
-            Name = model.UserName,
-            Password = model.Password
-        });
+        var response = await HttpClient.PostAsJsonAsync("/api/auth", context.Model);
 
         if (response.IsSuccessStatusCode)
         {

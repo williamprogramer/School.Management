@@ -18,15 +18,15 @@
                 </MudAvatar>
             </ActivatorContent>
             <ChildContent>
-                <MudMenuItem OnClick="LogoutAsync" OnTouch="LogoutAsync" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Primary">Salir</MudMenuItem>
+                <MudMenuItem OnClick="Logout" OnTouch="Logout" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Primary">Salir</MudMenuItem>
             </ChildContent>
         </MudMenu>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <MudPaper Elevation="0">
             <MudNavMenu Rounded="true" Margin="Margin.Dense" Color="Color.Primary" Class="pa-2" Bordered="true">
+                <MudNavLink Href="/" Icon="@Icons.Material.Filled.Dashboard">Panel de control</MudNavLink>
                 <AuthorizeView Roles="Administrator">
-                    <MudNavLink Href="/" Icon="@Icons.Material.Filled.Dashboard">Panel de control</MudNavLink>
                     <MudNavGroup Title="Mantenimientos" Expanded="false">
                         <MudNavLink Href="/Maintenances/Administrators" Icon="@Icons.Material.Filled.Groups">Administradores</MudNavLink>
                     </MudNavGroup>
@@ -44,9 +44,8 @@
 @code {
     private bool _drawerOpen = true;
 
-    private async Task LogoutAsync()
+    private void Logout()
     {
-        await ((AppAuthenticationStateProvider)AuthenticationStateProvider).Logout();
-        NavigationManager.NavigateTo("/login");
+        _ = ((AppAuthenticationStateProvider)AuthenticationStateProvider).LogoutAsync();
     }
 }
