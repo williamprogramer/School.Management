@@ -14,7 +14,7 @@ namespace School.Management.BlazorWebAssembly.UI.Providers
             bool hasToken = await localStorage.ContainKeyAsync("token");
             if (!hasToken)
             {
-                return new AuthenticationState(new ClaimsPrincipal());
+                return await Task.FromResult(new AuthenticationState(new ClaimsPrincipal()));
             }
             else
             {
@@ -34,7 +34,7 @@ namespace School.Management.BlazorWebAssembly.UI.Providers
                 TokenValidationResult tokenValidation = await tokenHandler.ValidateTokenAsync(token, validationParameters);
                 ClaimsIdentity identity = new(tokenValidation.ClaimsIdentity.Claims, "JWT");
                 ClaimsPrincipal principal = new(identity);
-                return new AuthenticationState(principal);
+                return await Task.FromResult(new AuthenticationState(principal));
             }
         }
 
@@ -61,8 +61,8 @@ namespace School.Management.BlazorWebAssembly.UI.Providers
 
         public async Task Logout()
         {
-            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new ClaimsPrincipal())));
             await localStorage.RemoveItemAsync("token");
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new ClaimsPrincipal())));
         }
     }
 }

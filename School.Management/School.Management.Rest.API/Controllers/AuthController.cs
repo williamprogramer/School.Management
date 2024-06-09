@@ -28,11 +28,8 @@ namespace School.Management.Rest.API.Controllers
 
                 List<Claim> claims =
                 [
-                    new(JwtRegisteredClaimNames.Sub, Guid.NewGuid().ToString()),
-                    new(JwtRegisteredClaimNames.Name, "William Amaya"),
-                    new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new(ClaimTypes.Role, "Administrator"),
-                    new(ClaimTypes.Name, "William Amaya")
+                    new(ClaimTypes.Name, "William")
                 ];
 
                 SecurityTokenDescriptor tokenDescriptor = new()

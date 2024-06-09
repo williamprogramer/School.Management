@@ -8,7 +8,7 @@
 
 <MudLayout>
     <MudAppBar Elevation="1" Dense="true">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="DrawerToggle" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="() => _drawerOpen = !_drawerOpen" />
         <MudText Typo="Typo.h5" Class="ml-3">Management</MudText>
         <MudSpacer />
         <MudMenu AnchorOrigin="Origin.TopLeft" TransformOrigin="Origin.TopLeft">
@@ -18,20 +18,17 @@
                 </MudAvatar>
             </ActivatorContent>
             <ChildContent>
-                <MudMenuItem OnClick="Logout" OnTouch="Logout" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Primary">Salir</MudMenuItem>
+                <MudMenuItem OnClick="LogoutAsync" OnTouch="LogoutAsync" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Primary">Salir</MudMenuItem>
             </ChildContent>
         </MudMenu>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <MudPaper Elevation="0">
             <MudNavMenu Rounded="true" Margin="Margin.Dense" Color="Color.Primary" Class="pa-2" Bordered="true">
-                <AuthorizeView Roles="Student">
-                    <MudNavLink Href="/" Icon="@Icons.Material.Filled.Dashboard">Panel de control</MudNavLink>
-                </AuthorizeView>
                 <AuthorizeView Roles="Administrator">
                     <MudNavLink Href="/" Icon="@Icons.Material.Filled.Dashboard">Panel de control</MudNavLink>
                     <MudNavGroup Title="Mantenimientos" Expanded="false">
-                        <MudNavLink Href="/Administrators" Icon="@Icons.Material.Filled.Groups">Administradores</MudNavLink>
+                        <MudNavLink Href="/Maintenances/Administrators" Icon="@Icons.Material.Filled.Groups">Administradores</MudNavLink>
                     </MudNavGroup>
                 </AuthorizeView>
             </MudNavMenu>
@@ -47,12 +44,7 @@
 @code {
     private bool _drawerOpen = true;
 
-    private void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-
-    private async void Logout()
+    private async Task LogoutAsync()
     {
         await ((AppAuthenticationStateProvider)AuthenticationStateProvider).Logout();
         NavigationManager.NavigateTo("/login");
