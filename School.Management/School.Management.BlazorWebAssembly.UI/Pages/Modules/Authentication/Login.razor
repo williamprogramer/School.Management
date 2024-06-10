@@ -6,18 +6,18 @@
 
 <MudGrid>
     <MudItem xs="12">
-        <EditForm Model="@model" OnValidSubmit="@OnValidSubmit">
+        <EditForm Model="@model" OnValidSubmit="@Submit">
             <DataAnnotationsValidator />
             <MudContainer MaxWidth="MaxWidth.Small">
                 <MudPaper Class="m-3 p-3" Outlined="true">
                     <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
                         <MudImage Src="logo.png" Alt="Logo" Width="100" Height="100" Class="rounded-lg" Style="background-color: #594ae2 !important;" />
                         <MudText Typo="Typo.h5">Inicio de Sesion</MudText>
-                        <MudTextField @bind-Value="model.Name" Label="Usuario" Variant="Variant.Outlined" For="(() => model.Name)" Immediate="true" FullWidth="true"/>
+                        <MudTextField @bind-Value="model.Name" Label="Usuario" Variant="Variant.Outlined" For="(() => model.Name)" Immediate="true" FullWidth="true" />
                         <MudTextField @bind-Value="model.Password" Label="Contraseña" Variant="Variant.Outlined" InputType="InputType.Password" For="(() => model.Password)" FullWidth="true" />
                         @if (_showAlert)
                         {
-                            <MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => _showAlert = !_showAlert)">Time to leave. Please close me!</MudAlert>
+                            <MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => _showAlert = !_showAlert)">Usuario o contraseña incorrectos!</MudAlert>
                         }
                         <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="@_processing" Size="Size.Medium" EndIcon="@Icons.Material.Filled.Login">
                             @if (_processing)
@@ -43,7 +43,7 @@
     private bool _processing = false;
     private bool _showAlert = false;
 
-    private async void OnValidSubmit(EditContext context)
+    private async Task Submit(EditContext context)
     {
         _processing = true;
         var response = await HttpClient.PostAsJsonAsync("/api/auth", context.Model);
