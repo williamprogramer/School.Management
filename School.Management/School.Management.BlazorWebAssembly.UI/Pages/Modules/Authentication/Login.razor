@@ -46,7 +46,7 @@
     private async Task Submit(EditContext context)
     {
         _processing = true;
-        var response = await HttpClient.PostAsJsonAsync("/api/authentication", context.Model);
+        HttpResponseMessage? response = await HttpClient.PostAsJsonAsync("/api/authentication", context.Model);
 
         if (response.IsSuccessStatusCode)
         {
@@ -58,9 +58,13 @@
                 NavigationManager.NavigateTo("/");
             }
         }
-        else
+        else if (response.StatusCode == HttpStatusCode.NotFound)
         {
             _showAlert = true;
+        }
+        else if (response.StatusCode == HttpStatusCode.InternalServerError)
+        {
+            throw new Exception("Error en la API");
         }
         _processing = false;
         StateHasChanged();

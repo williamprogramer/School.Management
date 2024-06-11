@@ -36,13 +36,37 @@
     </MudDrawer>
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-2">
-            @Body
+            <ErrorBoundary @ref="@_errorBoundary" Context="Exception">
+                <ChildContent>
+                    @Body
+                </ChildContent>
+                <ErrorContent>
+                    <div class="alert bg-danger text-white alert-dismissible">
+                        @Exception.GetType(): @Exception.Message
+                        <button class="btn-close" @onclick="Recover"></button>
+                    </div>
+                </ErrorContent>
+            </ErrorBoundary>
         </MudContainer>
     </MudMainContent>
 </MudLayout>
 
 @code {
     private bool _drawerOpen = true;
+
+    private ErrorBoundary? _errorBoundary;
+
+    protected override void OnParametersSet()
+    {
+        if (_errorBoundary is not null)
+            _errorBoundary.Recover();
+    }
+
+    private void Recover()
+    {
+        if (_errorBoundary is not null)
+            _errorBoundary.Recover();
+    }
 
     private void Logout()
     {

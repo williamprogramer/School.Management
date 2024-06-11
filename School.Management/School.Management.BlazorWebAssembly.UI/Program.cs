@@ -15,5 +15,6 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<AuthenticationStateProvider, AppAuthenticationStateProvider>();
 builder.Services.AddBlazoredLocalStorageAsSingleton();
 builder.Services.AddMudServices();
+builder.Logging.SetMinimumLevel(LogLevel.None);
 
 await builder.Build().RunAsync();

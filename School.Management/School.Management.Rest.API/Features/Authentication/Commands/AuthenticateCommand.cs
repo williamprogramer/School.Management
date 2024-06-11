@@ -6,7 +6,7 @@ using System.Data;
 namespace School.Management.Rest.API.Features.Authentication.Commands
 {
     public record AuthenticateRequest(string UserName, string Password) : IRequest<AuthenticateResponse?>;
-    public record AuthenticateResponse(string Id, string UserName, string FullName, string RolName);
+    public record AuthenticateResponse(Guid Id, string UserName, string FullName, string RolName);
 
     public class AuthenticateCommand(IConfiguration configuration) : IRequestHandler<AuthenticateRequest, AuthenticateResponse?>
     {
@@ -25,7 +25,7 @@ namespace School.Management.Rest.API.Features.Authentication.Commands
                 
                 string query = @"
                     SELECT
-	                    CONVERT(VARCHAR(MAX), U.Id) AS Id
+	                    U.Id
 	                    ,U.UserName
 	                    ,U.FullName
 	                    ,R.[Name] AS RolName

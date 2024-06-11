@@ -23,7 +23,7 @@ namespace School.Management.Rest.API.Helpers
 
                 Claim[] claims =
                 [
-                    new(JwtRegisteredClaimNames.Sub, response.Id),
+                    new(JwtRegisteredClaimNames.Sub, response.Id.ToString()),
                     new(JwtRegisteredClaimNames.Name, response.UserName),
                     new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new(ClaimTypes.Role, response.RolName),
