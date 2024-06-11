@@ -3,49 +3,62 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject HttpClient HttpClient
+@attribute [AllowAnonymous]
 
-<MudGrid>
-    <MudItem xs="12">
-        <EditForm Model="@model" OnValidSubmit="@Submit">
-            <DataAnnotationsValidator />
-            <MudContainer MaxWidth="MaxWidth.Small">
-                <MudPaper Class="m-3 p-3" Outlined="true">
-                    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
-                        <MudImage Src="logo.png" Alt="Logo" Width="100" Height="100" Class="rounded-lg" Style="background-color: #594ae2 !important;" />
-                        <MudText Typo="Typo.h5">Inicio de Sesion</MudText>
-                        <MudTextField @bind-Value="model.UserName" Label="Usuario" Variant="Variant.Outlined" For="(() => model.UserName)" Immediate="true" FullWidth="true" />
-                        <MudTextField @bind-Value="model.Password" Label="Contraseña" Variant="Variant.Outlined" InputType="InputType.Password" For="(() => model.Password)" FullWidth="true" />
-                        @if (_showAlert)
-                        {
-                            <MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => _showAlert = !_showAlert)">Usuario o contraseña incorrectos!</MudAlert>
-                        }
-                        <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="@_processing" Size="Size.Medium" EndIcon="@Icons.Material.Filled.Login">
-                            @if (_processing)
+@if (_model is not null)
+{
+    <MudGrid>
+        <MudItem xs="12">
+            <EditForm Model="_model" OnValidSubmit="@Submit">
+                <DataAnnotationsValidator />
+                <MudContainer MaxWidth="MaxWidth.Small">
+                    <MudPaper Class="m-3 p-3" Outlined="true">
+                        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                            <MudImage Src="logo.png" Alt="Logo" Width="100" Height="100" Class="rounded-lg" Style="background-color: #594ae2 !important;" />
+                            <MudText Typo="Typo.h5">Inicio de Sesion</MudText>
+                            <MudTextField @bind-Value="_model.UserName" Label="Usuario" Variant="Variant.Outlined" For="(() => _model.UserName)" Immediate="true" FullWidth="true" />
+                            <MudTextField @bind-Value="_model.Password" Label="Contraseña" Variant="Variant.Outlined" InputType="InputType.Password" For="(() => _model.Password)" FullWidth="true" />
+                            @if (_showAlert)
                             {
-                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                                <MudText Class="ms-2">Procesando</MudText>
+                                <MudAlert Severity="_severity" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => _showAlert = !_showAlert)">@_showAlertText</MudAlert>
                             }
-                            else
-                            {
-                                <MudText>Iniciar sesion</MudText>
-                            }
-                        </MudButton>
-                    </MudStack>
-                </MudPaper>
-            </MudContainer>
-        </EditForm>
-    </MudItem>
-</MudGrid>
+                            <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="@_processing" Size="Size.Medium" EndIcon="@Icons.Material.Filled.Login">
+                                @if (_processing)
+                                {
+                                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                    <MudText Class="ms-2">Procesando</MudText>
+                                }
+                                else
+                                {
+                                    <MudText>Iniciar sesion</MudText>
+                                }
+                            </MudButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudContainer>
+            </EditForm>
+        </MudItem>
+    </MudGrid>
+}
 
 @code
 {
-    private AutheticateModel model = new AutheticateModel();
+    private AutheticateModel? _model;
+    private record ResponseModel(string Token);
     private bool _processing = false;
     private bool _showAlert = false;
+    private string _showAlertText = string.Empty;
+    private Severity _severity = Severity.Warning;
+
+    protected override void OnInitialized()
+    {
+        _model = new();
+    }
 
     private async Task Submit(EditContext context)
     {
         _processing = true;
+
         HttpResponseMessage? response = await HttpClient.PostAsJsonAsync("/api/authentication", context.Model);
 
         if (response.IsSuccessStatusCode)
@@ -60,18 +73,21 @@
         }
         else if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            _showAlert = true;
+            ShowAlert("Usuario o contraseña incorrectos.", Severity.Error);
         }
         else if (response.StatusCode == HttpStatusCode.InternalServerError)
         {
-            throw new Exception("Error en la API");
+            ShowAlert("Lo siento, ocurrió un problema de servidor, por favor notifica a tu administrador.", Severity.Error);
         }
+
         _processing = false;
         StateHasChanged();
     }
 
-    public class ResponseModel
+    private void ShowAlert(string message, Severity severity)
     {
-        public string Token { get; set; } = string.Empty;
+        _showAlert = true;
+        _showAlertText = message;
+        _severity = severity;
     }
 }

@@ -1,0 +1,14 @@
+@page "/maintenance/administrator"
+@attribute [Authorize(Roles = "Administrator")]
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudPaper Outlined="true" Class="p-3">
+                <MudStack Row="true" AlignItems="AlignItems.End" Justify="Justify.FlexEnd">
+                    <MudButton Size="Size.Small" Variant="Variant.Filled" DisableElevation="true" Color="Color.Success" StartIcon="@Icons.Material.Filled.Add" Href="/maintenance/administrator/add">agregar administrador</MudButton>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
