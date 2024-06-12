@@ -67,13 +67,15 @@
 
             if (model is not null && !string.IsNullOrWhiteSpace(model?.Token))
             {
-                await ((AppAuthenticationStateProvider)AuthenticationStateProvider).AuthenticateAsync(model.Token);
-                NavigationManager.NavigateTo("/");
+                if (await ((AppAuthenticationStateProvider)AuthenticationStateProvider).AuthenticateAsync(model.Token))
+                    NavigationManager.NavigateTo("/");
+                else
+                    ShowAlert("Lo siento, ocurrio un problema al autenticarte.", Severity.Warning);
             }
         }
         else if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            ShowAlert("Usuario o contraseña incorrectos.", Severity.Error);
+            ShowAlert("Usuario o contraseña incorrectos.", Severity.Warning);
         }
         else if (response.StatusCode == HttpStatusCode.InternalServerError)
         {

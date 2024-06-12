@@ -16,7 +16,7 @@ namespace School.Management.Rest.API.Helpers
                 string? issuer = configuration.GetValue<string>("Jwt:Issuer");
 
                 if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(issuer))
-                    throw new Exception("La key para crear el token es incorrecta");
+                    throw new Exception("Propiedades necesarias para el token descriptor incorrectas");
 
                 SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(key));
                 SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha256);
@@ -35,7 +35,7 @@ namespace School.Management.Rest.API.Helpers
                     Issuer = issuer,
                     Audience = "http://localhost:5263",
                     Subject = new ClaimsIdentity(claims),
-                    Expires = DateTime.UtcNow.AddHours(8),
+                    Expires = DateTime.UtcNow.AddMinutes(30),
                     SigningCredentials = credentials
                 };
 

@@ -38,10 +38,10 @@ namespace School.Management.BlazorWebAssembly.UI.Providers
             }
         }
 
-        public async Task AuthenticateAsync(string token)
+        public async Task<bool> AuthenticateAsync(string token)
         {
-            await localStorage.SetItemAsync("token", token);
             SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes("gEWsrPC7h5oxD9LkniwHOMd4TeN2acB6"));
+            
             TokenValidationParameters validationParameters = new()
             {
                 ValidateLifetime = true,
@@ -52,11 +52,20 @@ namespace School.Management.BlazorWebAssembly.UI.Providers
                 ValidateAudience = true,
                 ValidAudience = "http://localhost:5263"
             };
+            
             JsonWebTokenHandler tokenHandler = new();
             TokenValidationResult tokenValidation = await tokenHandler.ValidateTokenAsync(token, validationParameters);
-            ClaimsIdentity identity = new(tokenValidation.ClaimsIdentity.Claims, "JWT");
-            ClaimsPrincipal principal = new(identity);
-            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));
+            var exp = tokenHandler.ReadJsonWebToken(token).GetClaim("exp").Value;
+            
+            if (tokenValidation.IsValid)
+            {
+                await localStorage.SetItemAsync("token", token);
+                ClaimsIdentity identity = new(tokenValidation.ClaimsIdentity.Claims, "JWT");
+                ClaimsPrincipal principal = new(identity);
+                NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));
+            }
+
+            return tokenValidation.IsValid;
         }
 
         public async Task LogoutAsync()

@@ -21,7 +21,7 @@ namespace School.Management.Rest.API.Features.Authentication.Commands
                 
                 DynamicParameters parameters = new();
                 parameters.Add("@password", request.Password, DbType.String);
-                parameters.Add("@userName", request.UserName, DbType.String);
+                parameters.Add("@username", request.UserName, DbType.String);
                 
                 string query = @"
                     SELECT
@@ -33,7 +33,7 @@ namespace School.Management.Rest.API.Features.Authentication.Commands
 	                    [Security].[User] AS U
 	                    INNER JOIN [Security].[Role] AS R ON R.Id = U.RoleId
                     WHERE
-	                    U.UserName = @userName
+	                    U.UserName = @username
 	                    AND CONVERT(VARCHAR(MAX), DECRYPTBYPASSPHRASE(@password, U.[Password])) = @password
 	                    AND U.[Enabled] = 1;
                 ";
