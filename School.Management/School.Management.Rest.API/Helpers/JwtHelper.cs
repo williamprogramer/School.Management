@@ -14,8 +14,9 @@ namespace School.Management.Rest.API.Helpers
             {
                 string? key = configuration.GetValue<string>("Jwt:Key");
                 string? issuer = configuration.GetValue<string>("Jwt:Issuer");
+                string? audience = configuration.GetValue<string>("Jwt:Audience");
 
-                if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(issuer))
+                if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(issuer) || string.IsNullOrWhiteSpace(audience))
                     throw new Exception("Propiedades necesarias para el token descriptor incorrectas");
 
                 SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(key));
@@ -33,9 +34,9 @@ namespace School.Management.Rest.API.Helpers
                 SecurityTokenDescriptor tokenDescriptor = new()
                 {
                     Issuer = issuer,
-                    Audience = "http://localhost:5263",
+                    Audience = audience,
                     Subject = new ClaimsIdentity(claims),
-                    Expires = DateTime.UtcNow.AddMinutes(30),
+                    Expires = DateTime.UtcNow.AddSeconds(10),
                     SigningCredentials = credentials
                 };
 

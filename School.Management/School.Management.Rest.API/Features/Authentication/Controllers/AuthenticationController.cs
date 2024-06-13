@@ -19,9 +19,11 @@ namespace School.Management.Rest.API.Features.Authentication.Controllers
                 AuthenticateResponse? response = await mediator.Send(request);
 
                 if (response is null)
-                    return NotFound();
+                    return Unauthorized();
                 else
-                   return Ok(new { Token = response.GenerateToken(configuration) });
+                {
+                    return Ok(new { Token = response.GenerateToken(configuration) });
+                }
             }
             catch (Exception ex)
             {

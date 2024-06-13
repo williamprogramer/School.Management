@@ -68,8 +68,8 @@
             _errorBoundary.Recover();
     }
 
-    private void Logout()
+    private async Task Logout()
     {
-        _ = ((AppAuthenticationStateProvider)AuthenticationStateProvider).LogoutAsync();
+        await ((AppAuthenticationStateProvider)AuthenticationStateProvider).LogoutAsync();
     }
 }

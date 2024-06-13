@@ -65,13 +65,16 @@
         {
             ResponseModel? model = await response.Content.ReadFromJsonAsync<ResponseModel>();
 
-            if (model is not null && !string.IsNullOrWhiteSpace(model?.Token))
+            if (model is not null && !string.IsNullOrWhiteSpace(model.Token))
             {
-                if (await ((AppAuthenticationStateProvider)AuthenticationStateProvider).AuthenticateAsync(model.Token))
-                    NavigationManager.NavigateTo("/");
-                else
-                    ShowAlert("Lo siento, ocurrio un problema al autenticarte.", Severity.Warning);
+                await ((AppAuthenticationStateProvider)AuthenticationStateProvider).AuthenticateAsync(model.Token);
+                ShowAlert("Autenticacion valida.", Severity.Success);
+                _processing = false;
+                StateHasChanged();
+                NavigationManager.NavigateTo("/");
             }
+            else
+                ShowAlert("Lo siento, ocurrio un problema al autenticarte.", Severity.Warning);
         }
         else if (response.StatusCode == HttpStatusCode.NotFound)
         {
