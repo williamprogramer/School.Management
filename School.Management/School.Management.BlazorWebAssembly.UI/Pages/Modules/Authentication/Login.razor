@@ -22,7 +22,7 @@
                             {
                                 <MudAlert Severity="_severity" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => _showAlert = !_showAlert)">@_showAlertText</MudAlert>
                             }
-                            <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="@_processing" Size="Size.Medium" EndIcon="@Icons.Material.Filled.Login">
+                            <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="_processing" Size="Size.Medium" EndIcon="@Icons.Material.Filled.Login">
                                 @if (_processing)
                                 {
                                     <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
@@ -68,22 +68,15 @@
             if (model is not null && !string.IsNullOrWhiteSpace(model.Token))
             {
                 await ((AppAuthenticationStateProvider)AuthenticationStateProvider).AuthenticateAsync(model.Token);
-                ShowAlert("Autenticacion valida.", Severity.Success);
-                _processing = false;
-                StateHasChanged();
                 NavigationManager.NavigateTo("/");
             }
             else
                 ShowAlert("Lo siento, ocurrio un problema al autenticarte.", Severity.Warning);
         }
-        else if (response.StatusCode == HttpStatusCode.NotFound)
-        {
+        else if (response.StatusCode == HttpStatusCode.Unauthorized)
             ShowAlert("Usuario o contraseña incorrectos.", Severity.Warning);
-        }
         else if (response.StatusCode == HttpStatusCode.InternalServerError)
-        {
             ShowAlert("Lo siento, ocurrió un problema de servidor, por favor notifica a tu administrador.", Severity.Error);
-        }
 
         _processing = false;
         StateHasChanged();

@@ -20,8 +20,8 @@ namespace School.Management.Rest.API.Features.Authentication.Commands
                     connection.Open();
                 
                 DynamicParameters parameters = new();
-                parameters.Add("@password", request.Password, DbType.String);
-                parameters.Add("@username", request.UserName, DbType.String);
+                parameters.Add("@password", request.Password);
+                parameters.Add("@username", request.UserName);
                 
                 string query = @"
                     SELECT

@@ -5,20 +5,27 @@ using System.Security.Claims;
 
 namespace School.Management.BlazorWebAssembly.UI.Providers
 {
-    public class AppAuthenticationStateProvider(ILocalStorageService localStorage) : AuthenticationStateProvider
+    public class AppAuthenticationStateProvider(ILocalStorageService localStorage, HttpClient httpClient) : AuthenticationStateProvider
     {
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
+            ClaimsPrincipal principal = new();
             if (!await localStorage.ContainKeyAsync("token"))
-                return new AuthenticationState(new ClaimsPrincipal());
+                return new AuthenticationState(principal);
             else
             {
                 string? token = await localStorage.GetItemAsync<string>("token");
-                JsonWebTokenHandler tokenHandler = new();
-                JsonWebToken jwt = tokenHandler.ReadJsonWebToken(token);
-                ClaimsIdentity identity = new(jwt.Claims, "Jwt");
-                ClaimsPrincipal principal = new(identity);
-                return new AuthenticationState(principal);
+                HttpResponseMessage response = await httpClient.GetAsync($"api/authentication/validate/{token}");
+                if (response.IsSuccessStatusCode)
+                {
+                    JsonWebTokenHandler tokenHandler = new();
+                    JsonWebToken jwt = tokenHandler.ReadJsonWebToken(token);
+                    ClaimsIdentity identity = new(jwt.Claims, "Jwt");
+                    principal.AddIdentity(identity);
+                    return new AuthenticationState(principal);
+                }
+                else
+                    return new AuthenticationState(new ClaimsPrincipal());
             }
         }
 

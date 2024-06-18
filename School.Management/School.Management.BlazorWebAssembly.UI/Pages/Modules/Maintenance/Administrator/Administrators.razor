@@ -1,14 +1,141 @@
 @page "/maintenance/administrator"
+@using System.Net.Http.Headers
+@using Blazored.LocalStorage
+@using System.Text.Json
 @attribute [Authorize(Roles = "Administrator")]
+@inject HttpClient HttpClient
+@inject ILocalStorageService LocalStorageService
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <EditForm OnValidSubmit="Submit" Model="_addModel">
+        <DataAnnotationsValidator />
+        <MudGrid>
+            <MudItem xs="12">
+                <MudPaper Outlined="false" Elevation="0">
+                    <MudText Typo="Typo.h6">Mantenimiento</MudText>
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudPaper Outlined="true" Class="p-3">
+                    <MudPaper Outlined="false" Elevation="0" Class="mb-3">
+                        <MudText Typo="Typo.button" Color="Color.Primary">datos de administrador</MudText>
+                    </MudPaper>
+                    <MudGrid>
+                        <MudItem xs="12" md="6" lg="3">
+                            <MudTextField @bind-Value="_addModel.FullName" For="(() => _addModel.FullName)" Label="Nombre completo" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Person"></MudTextField>
+                        </MudItem>
+                        <MudItem xs="12" md="6" lg="3">
+                            <MudTextField @bind-Value="_addModel.Mail" For="(() => _addModel.Mail)" Label="Correo electronico" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Email"></MudTextField>
+                        </MudItem>
+                        <MudItem xs="12" md="6" lg="3">
+                            <MudDatePicker Label="Fecha de nacimiento" Editable="true" @bind-Date="_addModel.Birthday" For="(() => _addModel.Birthday)" Mask="@(new DateMask("MM/dd/yyyy"))" DateFormat="MM/dd/yyyy" Placeholder="mm/dd/yyyy" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem xs="12" md="6" lg="3">
+                            <MudTextField @bind-Value="_addModel.IdNumber" For="(() => _addModel.IdNumber)" Label="Numero de identificacion" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Badge"></MudTextField>
+                        </MudItem>
+                        <MudItem xs="12" md="12" lg="12">
+                            <MudTextField @bind-Value="_addModel.Address" For="(() => _addModel.Address)" Label="Direccion" Variant="Variant.Outlined" Margin="Margin.Dense" AutoGrow MaxLines="2" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Home"></MudTextField>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudStack Row="true" AlignItems="AlignItems.End" Justify="Justify.FlexEnd">
+                                <MudButton Size="Size.Small" Variant="Variant.Filled" DisableElevation="true" Color="Color.Default" OnClick="Reset" Disabled="_processing">cancelar</MudButton>
+                                <MudButton Size="Size.Small" Variant="Variant.Filled" DisableElevation="true" Color="Color.Success" EndIcon="@Icons.Material.Filled.Add" ButtonType="ButtonType.Submit" Disabled="_processing">
+                                    @if (_processing)
+                                    {
+                                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                        <MudText Class="ms-2">Procesando</MudText>
+                                    }
+                                    else
+                                    {
+                                        <MudText>agregar administrador</MudText>
+                                    }
+                                </MudButton>
+                            </MudStack>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
     <MudGrid>
         <MudItem xs="12">
-            <MudPaper Outlined="true" Class="p-3">
-                <MudStack Row="true" AlignItems="AlignItems.End" Justify="Justify.FlexEnd">
-                    <MudButton Size="Size.Small" Variant="Variant.Filled" DisableElevation="true" Color="Color.Success" StartIcon="@Icons.Material.Filled.Add" Href="/maintenance/administrator/add">agregar administrador</MudButton>
-                </MudStack>
+            <MudPaper Outlined="true" Elevation="0">
+                <MudTable ServerData="@(new Func<TableState, Task<TableData<AdministratorsTableModel>>>(ServerReload))" Dense="false" Hover="false" Elevation="0" @ref="table">
+                    <ToolBarContent>
+                        <MudSpacer />
+                        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>Nombre</MudTh>
+                        <MudTh>Nombre</MudTh>
+                        <MudTh>Nombre</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Nombre">@context.FullName</MudTd>
+                        <MudTd DataLabel="Nombre">@context.FullName</MudTd>
+                        <MudTd DataLabel="Nombre">@context.FullName</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager page PageSizeOptions="new int[] { 5, 10 }" />
+                    </PagerContent>
+                </MudTable>
             </MudPaper>
         </MudItem>
     </MudGrid>
 </MudContainer>
+
+@code
+{
+    private AddAdministratorFormModel _addModel = new();
+    private bool _processing = false;
+    private record AdministratorsTableModel(string FullName);
+    private MudTable<AdministratorsTableModel>? table;
+    List<AdministratorsTableModel>? _table;
+
+    private async Task<TableData<AdministratorsTableModel>> ServerReload(TableState state)
+    {
+        await Task.Delay(3000);
+        _table = new List<AdministratorsTableModel>();
+        _table.Add(new AdministratorsTableModel("william alexander amaya guerrero"));
+        return new TableData<AdministratorsTableModel>() {
+            TotalItems = 7,
+            Items = _table
+        };
+    }
+
+    private void OnSearch(string text)
+    {
+        if (table is not null)
+            table.ReloadServerData();
+    }
+
+    private void Reset()
+    {
+        _addModel.Dispose();
+        _addModel = new();
+    }
+
+    private async Task Submit(EditContext context)
+    {
+        _processing = true;
+
+        string? token = await LocalStorageService.GetItemAsync<string>("token");
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("/api/administrator", new
+        {
+            FullName = _addModel.FullName,
+            Mail = _addModel.Mail,
+            IdNumber = _addModel.IdNumber,
+            Address = _addModel.Address,
+            Birthday = _addModel.Birthday
+        });
+
+        if (response.IsSuccessStatusCode)
+            Reset();
+
+        _processing = false;
+        StateHasChanged();
+    }
+}

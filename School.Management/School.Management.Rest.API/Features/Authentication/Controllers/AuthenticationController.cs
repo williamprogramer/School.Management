@@ -30,5 +30,18 @@ namespace School.Management.Rest.API.Features.Authentication.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpGet("validate/{token}")]
+        public async Task<IActionResult> Get([FromRoute] string token)
+        {
+            try
+            {
+                return await JwtHelper.ValidateTokenAsync(token, configuration) ? Ok() : Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }

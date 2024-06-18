@@ -18,7 +18,7 @@
                 </MudAvatar>
             </ActivatorContent>
             <ChildContent>
-                <MudMenuItem OnClick="Logout" OnTouch="Logout" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Primary">Salir</MudMenuItem>
+                <MudMenuItem OnClick="LogoutAsync" OnTouch="LogoutAsync" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Primary">Salir</MudMenuItem>
             </ChildContent>
         </MudMenu>
     </MudAppBar>
@@ -68,7 +68,7 @@
             _errorBoundary.Recover();
     }
 
-    private async Task Logout()
+    private async Task LogoutAsync()
     {
         await ((AppAuthenticationStateProvider)AuthenticationStateProvider).LogoutAsync();
     }
