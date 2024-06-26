@@ -1,0 +1,30 @@
+﻿@using System.Security.Claims;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<MudBadge Color="Color.Success" Overlap="true" Bordered="true" Dot="true">
+    <MudAvatar>
+        <MudAvatar Color="Color.Dark">@_name</MudAvatar>
+    </MudAvatar>
+</MudBadge>
+
+@code
+{
+    private string _name = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IEnumerable<Claim> claims = await ((AppAuthenticationStateProvider)AuthenticationStateProvider).GetClaims();
+            Claim? claim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
+            if (claim is not null)
+            {
+                string[] fullname = claim.Value.Split(' ');
+                _name = fullname[0].Substring(0, 1) + fullname[2].Substring(0, 1);
+            }
+            else
+                _name = "M";
+            StateHasChanged();
+        }
+    }
+}

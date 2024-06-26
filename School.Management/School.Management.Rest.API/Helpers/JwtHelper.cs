@@ -8,7 +8,7 @@ namespace School.Management.Rest.API.Helpers
 {
     public static class JwtHelper
     {
-        public static string GenerateToken(this AuthenticateResponse response, IConfiguration configuration)
+        public static string GenerateToken(this AuthenticationResponse response, IConfiguration configuration)
         {
             try
             {
@@ -49,7 +49,7 @@ namespace School.Management.Rest.API.Helpers
             }
         }
         
-        public static async Task<bool>  ValidateTokenAsync(string token, IConfiguration configuration)
+        public static async Task<bool> ValidateTokenAsync(string token, IConfiguration configuration)
         {
             try
             {

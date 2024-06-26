@@ -7,15 +7,13 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="1" Dense="true">
+    <MudAppBar Elevation="0" Dense="false">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="() => _drawerOpen = !_drawerOpen" />
         <MudText Typo="Typo.h5" Class="ml-3">Management</MudText>
         <MudSpacer />
         <MudMenu AnchorOrigin="Origin.TopLeft" TransformOrigin="Origin.TopLeft">
             <ActivatorContent>
-                <MudAvatar>
-                    <MudImage Src="logo.png" Alt="Logo" />
-                </MudAvatar>
+                <AppBarAvatar />
             </ActivatorContent>
             <ChildContent>
                 <MudMenuItem OnClick="LogoutAsync" OnTouch="LogoutAsync" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Primary">Salir</MudMenuItem>

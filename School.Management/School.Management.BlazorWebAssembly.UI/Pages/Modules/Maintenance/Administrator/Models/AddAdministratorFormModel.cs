@@ -19,6 +19,7 @@ namespace School.Management.BlazorWebAssembly.UI.Pages.Modules.Maintenance.Admin
         public void Dispose()
         {
             GC.SuppressFinalize(this);
+            GC.WaitForPendingFinalizers();
         }
     }
 }

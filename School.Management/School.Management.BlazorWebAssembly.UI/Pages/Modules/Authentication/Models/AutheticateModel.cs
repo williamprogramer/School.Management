@@ -4,9 +4,9 @@ namespace School.Management.BlazorWebAssembly.UI.Pages.Modules.Authentication.Mo
 {
     public class AutheticateModel
     {
-        [Required(ErrorMessage = "El Usuario es requerido")]
+        [Required(ErrorMessage = "usuario requerido")]
         public string UserName { get; set; } = string.Empty;
-        [Required(ErrorMessage = "La Contraseña es requerido")]
+        [Required(ErrorMessage = "contraseña requerido")]
         public string Password { get; set; } = string.Empty;
     }
 }

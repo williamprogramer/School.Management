@@ -26,15 +26,11 @@ namespace School.Management.Rest.API.Features.Administrator.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] int page, [FromQuery] int size)
+        public async Task<IActionResult> Get()
         {
             try
             {
-                return Ok(await mediator.Send(new GetAdministratorsRequest()
-                {
-                    Page = page,
-                    Size = size
-                }));
+                return Ok(await mediator.Send(new GetAdministratorsRequest()));
             }
             catch (Exception ex)
             {

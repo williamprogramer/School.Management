@@ -1,91 +1,9 @@
 ﻿@page "/Login"
 @layout LoginLayout
-@inject AuthenticationStateProvider AuthenticationStateProvider
-@inject NavigationManager NavigationManager
-@inject HttpClient HttpClient
 @attribute [AllowAnonymous]
 
-@if (_model is not null)
-{
-    <MudGrid>
-        <MudItem xs="12">
-            <EditForm Model="_model" OnValidSubmit="@Submit">
-                <DataAnnotationsValidator />
-                <MudContainer MaxWidth="MaxWidth.Small">
-                    <MudPaper Class="m-3 p-3" Outlined="true">
-                        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
-                            <MudImage Src="logo.png" Alt="Logo" Width="100" Height="100" Class="rounded-lg" Style="background-color: #594ae2 !important;" />
-                            <MudText Typo="Typo.h5">Inicio de Sesion</MudText>
-                            <MudTextField @bind-Value="_model.UserName" Label="Usuario" Variant="Variant.Outlined" For="(() => _model.UserName)" Immediate="true" FullWidth="true" />
-                            <MudTextField @bind-Value="_model.Password" Label="Contraseña" Variant="Variant.Outlined" InputType="InputType.Password" For="(() => _model.Password)" FullWidth="true" />
-                            @if (_showAlert)
-                            {
-                                <MudAlert Severity="_severity" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => _showAlert = !_showAlert)">@_showAlertText</MudAlert>
-                            }
-                            <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="_processing" Size="Size.Medium" EndIcon="@Icons.Material.Filled.Login">
-                                @if (_processing)
-                                {
-                                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                                    <MudText Class="ms-2">Procesando</MudText>
-                                }
-                                else
-                                {
-                                    <MudText>Iniciar sesion</MudText>
-                                }
-                            </MudButton>
-                        </MudStack>
-                    </MudPaper>
-                </MudContainer>
-            </EditForm>
-        </MudItem>
-    </MudGrid>
-}
-
-@code
-{
-    private AutheticateModel? _model;
-    private record ResponseModel(string Token);
-    private bool _processing = false;
-    private bool _showAlert = false;
-    private string _showAlertText = string.Empty;
-    private Severity _severity = Severity.Warning;
-
-    protected override void OnInitialized()
-    {
-        _model = new();
-    }
-
-    private async Task Submit(EditContext context)
-    {
-        _processing = true;
-
-        HttpResponseMessage? response = await HttpClient.PostAsJsonAsync("/api/authentication", context.Model);
-
-        if (response.IsSuccessStatusCode)
-        {
-            ResponseModel? model = await response.Content.ReadFromJsonAsync<ResponseModel>();
-
-            if (model is not null && !string.IsNullOrWhiteSpace(model.Token))
-            {
-                await ((AppAuthenticationStateProvider)AuthenticationStateProvider).AuthenticateAsync(model.Token);
-                NavigationManager.NavigateTo("/");
-            }
-            else
-                ShowAlert("Lo siento, ocurrio un problema al autenticarte.", Severity.Warning);
-        }
-        else if (response.StatusCode == HttpStatusCode.Unauthorized)
-            ShowAlert("Usuario o contraseña incorrectos.", Severity.Warning);
-        else if (response.StatusCode == HttpStatusCode.InternalServerError)
-            ShowAlert("Lo siento, ocurrió un problema de servidor, por favor notifica a tu administrador.", Severity.Error);
-
-        _processing = false;
-        StateHasChanged();
-    }
-
-    private void ShowAlert(string message, Severity severity)
-    {
-        _showAlert = true;
-        _showAlertText = message;
-        _severity = severity;
-    }
-}
+<MudGrid>
+    <MudItem xs="12">
+        <AuthenticationForm/>
+    </MudItem>
+</MudGrid>

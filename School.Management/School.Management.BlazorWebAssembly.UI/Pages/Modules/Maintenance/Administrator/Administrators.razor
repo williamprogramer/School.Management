@@ -39,17 +39,9 @@
                         </MudItem>
                         <MudItem xs="12">
                             <MudStack Row="true" AlignItems="AlignItems.End" Justify="Justify.FlexEnd">
-                                <MudButton Size="Size.Small" Variant="Variant.Filled" DisableElevation="true" Color="Color.Default" OnClick="Reset" Disabled="_processing">cancelar</MudButton>
+                                <MudButton Size="Size.Small" Variant="Variant.Filled" DisableElevation="true" Color="Color.Default" OnClick="Reset" Disabled="_processing"><MudText>cancelar</MudText></MudButton>
                                 <MudButton Size="Size.Small" Variant="Variant.Filled" DisableElevation="true" Color="Color.Success" EndIcon="@Icons.Material.Filled.Add" ButtonType="ButtonType.Submit" Disabled="_processing">
-                                    @if (_processing)
-                                    {
-                                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                                        <MudText Class="ms-2">Procesando</MudText>
-                                    }
-                                    else
-                                    {
-                                        <MudText>agregar administrador</MudText>
-                                    }
+                                    <MudText>agregar</MudText>
                                 </MudButton>
                             </MudStack>
                         </MudItem>
@@ -61,24 +53,25 @@
     <MudGrid>
         <MudItem xs="12">
             <MudPaper Outlined="true" Elevation="0">
-                <MudTable ServerData="@(new Func<TableState, Task<TableData<AdministratorsTableModel>>>(ServerReload))" Dense="false" Hover="false" Elevation="0" @ref="table">
-                    <ToolBarContent>
-                        <MudSpacer />
-                        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
-                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-                    </ToolBarContent>
+                <MudTable Items="@Elements" Hover="true" Dense="true" Breakpoint="Breakpoint.Sm" Loading="_tableLoading" LoadingProgressColor="Color.Info" Bordered="true" Striped="true">
                     <HeaderContent>
-                        <MudTh>Nombre</MudTh>
-                        <MudTh>Nombre</MudTh>
-                        <MudTh>Nombre</MudTh>
+                        <MudTh>Nombre completo</MudTh>
+                        <MudTh>Numero de identificacion</MudTh>
+                        <MudTh>Correo electronico</MudTh>
+                        <MudTh>Usuario</MudTh>
+                        <MudTh>Options</MudTh>
                     </HeaderContent>
                     <RowTemplate>
-                        <MudTd DataLabel="Nombre">@context.FullName</MudTd>
-                        <MudTd DataLabel="Nombre">@context.FullName</MudTd>
-                        <MudTd DataLabel="Nombre">@context.FullName</MudTd>
+                        <MudTd DataLabel="Nombre completo">@context.FullName</MudTd>
+                        <MudTd DataLabel="Numero de identificacion">@context.IdNumber</MudTd>
+                        <MudTd DataLabel="Correo electronico">@context.Mail</MudTd>
+                        <MudTd DataLabel="Usuario">@context.UserName</MudTd>
+                        <MudTd DataLabel="Options">
+                            <MudIconButton OnClick="() => Test(context.FullName)" Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" DisableElevation="true" />
+                        </MudTd>
                     </RowTemplate>
                     <PagerContent>
-                        <MudTablePager page PageSizeOptions="new int[] { 5, 10 }" />
+                        <MudTablePager />
                     </PagerContent>
                 </MudTable>
             </MudPaper>
@@ -90,25 +83,21 @@
 {
     private AddAdministratorFormModel _addModel = new();
     private bool _processing = false;
-    private record AdministratorsTableModel(string FullName);
-    private MudTable<AdministratorsTableModel>? table;
-    List<AdministratorsTableModel>? _table;
+    private bool _tableLoading = true;
+    private record AdministratorsTableModel(string UserName, string FullName, string IdNumber, string Mail);
+    private IEnumerable<AdministratorsTableModel>? Elements = new List<AdministratorsTableModel>();
 
-    private async Task<TableData<AdministratorsTableModel>> ServerReload(TableState state)
+    private void Test(string fullname)
     {
-        await Task.Delay(3000);
-        _table = new List<AdministratorsTableModel>();
-        _table.Add(new AdministratorsTableModel("william alexander amaya guerrero"));
-        return new TableData<AdministratorsTableModel>() {
-            TotalItems = 7,
-            Items = _table
-        };
+        Console.WriteLine(fullname);
     }
 
-    private void OnSearch(string text)
+    protected override async Task OnInitializedAsync()
     {
-        if (table is not null)
-            table.ReloadServerData();
+        string? token = await LocalStorageService.GetItemAsync<string>("token");
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        Elements = await HttpClient.GetFromJsonAsync<List<AdministratorsTableModel>>("api/administrator");
+        _tableLoading = false;
     }
 
     private void Reset()
@@ -136,6 +125,10 @@
             Reset();
 
         _processing = false;
+        _tableLoading = true;
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        Elements = await HttpClient.GetFromJsonAsync<List<AdministratorsTableModel>>("api/administrator");
+        _tableLoading = false;
         StateHasChanged();
     }
 }

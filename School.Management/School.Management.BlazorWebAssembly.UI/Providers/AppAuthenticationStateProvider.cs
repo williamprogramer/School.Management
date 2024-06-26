@@ -43,5 +43,18 @@ namespace School.Management.BlazorWebAssembly.UI.Providers
             await localStorage.RemoveItemAsync("token");
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new ClaimsPrincipal())));
         }
+
+        public async Task<IEnumerable<Claim>> GetClaims()
+        {
+            string? token = await localStorage.GetItemAsync<string>("token");
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                JsonWebTokenHandler tokenHandler = new();
+                JsonWebToken jwt = tokenHandler.ReadJsonWebToken(token);
+                return jwt.Claims;
+            }
+            else
+                return Enumerable.Empty<Claim>();
+        }
     }
 }

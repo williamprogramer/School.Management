@@ -1,0 +1,70 @@
+﻿@inject HttpClient HttpClient
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+<EditForm Model="_model" OnValidSubmit="@Submit">
+    <DataAnnotationsValidator />
+    <MudContainer MaxWidth="MaxWidth.Small">
+        <MudPaper Class="m-3 p-3" Outlined="true">
+            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                <MudImage Src="logo.png" Alt="Logo" Width="100" Height="100" Class="rounded-lg" Style="background-color: #594ae2 !important;" />
+                <MudText Typo="Typo.h5">Autenticación</MudText>
+                <MudTextField @bind-Value="_model.UserName" Label="Usuario" Variant="Variant.Outlined" For="(() => _model.UserName)" Immediate="true" FullWidth="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Person" />
+                <MudTextField @bind-Value="_model.Password" Label="Contraseña" Variant="Variant.Outlined" InputType="InputType.Password" For="(() => _model.Password)" FullWidth="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.VisibilityOff" />
+                @if (_alert)
+                {
+                    <MudAlert Severity="_severity" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => _alert = !_alert)">@_alertText</MudAlert>
+                }
+                <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="_processing" Size="Size.Medium" EndIcon="@Icons.Material.Filled.Login">
+                    @if (_processing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ms-2">Autenticandote</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Autenticarme</MudText>
+                    }
+                </MudButton>
+            </MudStack>
+        </MudPaper>
+    </MudContainer>
+</EditForm>
+
+@code
+{
+    private AutheticateModel _model = new();
+    private bool _processing = false;
+    private bool _alert = false;
+    private string _alertText = string.Empty;
+    private Severity _severity = Severity.Warning;
+
+    private async Task Submit(EditContext context)
+    {
+        _processing = true;
+
+        HttpResponseMessage? response = await HttpClient.PostAsJsonAsync("/api/authentication", context.Model);
+
+        if (response.IsSuccessStatusCode)
+        {
+            AuthenticationResponseModel? model = await response.Content.ReadFromJsonAsync<AuthenticationResponseModel>();
+
+            if (model is not null && model.IsValid())
+            {
+                await ((AppAuthenticationStateProvider)AuthenticationStateProvider).AuthenticateAsync(model.Token);
+                NavigationManager.NavigateTo("/");
+            }
+        }
+        else
+            ShowAlert("Usuario o contraseña no valido.", Severity.Warning);
+
+        _processing = false;
+    }
+
+    private void ShowAlert(string message, Severity severity)
+    {
+        _alert = true;
+        _alertText = message;
+        _severity = severity;
+    }
+}

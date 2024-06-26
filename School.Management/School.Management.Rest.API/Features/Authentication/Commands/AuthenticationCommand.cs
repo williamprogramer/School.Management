@@ -5,12 +5,12 @@ using System.Data;
 
 namespace School.Management.Rest.API.Features.Authentication.Commands
 {
-    public record AuthenticateRequest(string UserName, string Password) : IRequest<AuthenticateResponse?>;
-    public record AuthenticateResponse(Guid Id, string UserName, string FullName, string RolName);
+    public record AuthenticationRequest(string UserName, string Password) : IRequest<AuthenticationResponse?>;
+    public record AuthenticationResponse(Guid Id, string UserName, string FullName, string RolName);
 
-    public class AuthenticateCommand(IConfiguration configuration) : IRequestHandler<AuthenticateRequest, AuthenticateResponse?>
+    public class AuthenticationCommand(IConfiguration configuration) : IRequestHandler<AuthenticationRequest, AuthenticationResponse?>
     {
-        public async Task<AuthenticateResponse?> Handle(AuthenticateRequest request, CancellationToken cancellationToken)
+        public async Task<AuthenticationResponse?> Handle(AuthenticationRequest request, CancellationToken cancellationToken)
         {
             try
             {
@@ -37,8 +37,8 @@ namespace School.Management.Rest.API.Features.Authentication.Commands
 	                    AND CONVERT(VARCHAR(MAX), DECRYPTBYPASSPHRASE(@password, U.[Password])) = @password
 	                    AND U.[Enabled] = 1;
                 ";
-                
-                AuthenticateResponse? response = await connection.QueryFirstOrDefaultAsync<AuthenticateResponse>(query, parameters);
+
+                AuthenticationResponse? response = await connection.QueryFirstOrDefaultAsync<AuthenticationResponse>(query, parameters);
                 
                 connection.Close();
 

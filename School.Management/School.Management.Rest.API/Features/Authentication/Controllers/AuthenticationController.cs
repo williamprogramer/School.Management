@@ -12,18 +12,16 @@ namespace School.Management.Rest.API.Features.Authentication.Controllers
     public class AuthenticationController(IMediator mediator, IConfiguration configuration) : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] AuthenticateRequest request)
+        public async Task<IActionResult> PostAsync([FromBody] AuthenticationRequest request)
         {
             try
             {
-                AuthenticateResponse? response = await mediator.Send(request);
+                AuthenticationResponse? response = await mediator.Send(request);
 
                 if (response is null)
                     return Unauthorized();
                 else
-                {
                     return Ok(new { Token = response.GenerateToken(configuration) });
-                }
             }
             catch (Exception ex)
             {
@@ -32,7 +30,7 @@ namespace School.Management.Rest.API.Features.Authentication.Controllers
         }
 
         [HttpGet("validate/{token}")]
-        public async Task<IActionResult> Get([FromRoute] string token)
+        public async Task<IActionResult> GetAsync([FromRoute] string token)
         {
             try
             {
